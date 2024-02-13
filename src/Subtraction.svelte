@@ -9,6 +9,7 @@ let minuend = [];
 let subtrahend = [];
 let actual_answer = [];
 let answer = [];
+let carries = [];
 let answer_index = 0;
 
 let total_correct = 0;
@@ -69,8 +70,10 @@ function generate() {
   }
 
   answer = [];
+  carries = []
   for (let i = 0; i < minuend.length; i++) {
     answer.push(null);
+    carries.push(false);
   }
   actual_answer = subtract(minuend, subtrahend);
   if (forward) {
@@ -126,6 +129,20 @@ function do_backspace() {
   answer[answer_index] = null;
 }
 
+function toggle_carry(i) {
+  if (forward) {
+    return;
+  }
+  let next_index = i - 1;
+  if (next_index < 0) {
+    return;
+  }
+  carries[next_index] = !carries[next_index];
+  if (minuend[next_index] === 0) {
+    toggle_carry(next_index);
+  }
+}
+
 function handle_input(e) {
   if (e.key[0] >= '0' && e.key[0] <= '9') {
     enter_digit(e.key[0] - '0');
@@ -133,14 +150,32 @@ function handle_input(e) {
     do_backspace();
   } else if (e.key === 'Enter') {
     check_answer();
+  } else if (e.key === 'c') {
+    toggle_carry(answer_index);
   }
   e.preventDefault();
   e.stopPropagation();
 }
 
 function reset_total() {
-  total_solved = 0;
+  total_correct = 0;
   generate();
+}
+
+function any_carries() {
+  for (let i = 0; i < carries.length; i++) {
+    if (carries[i]) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function carry_one(i) {
+  if (i > 0 && carries[i - 1]) {
+    return "1";
+  }
+  return "";
 }
 
 
@@ -151,15 +186,23 @@ function reset_total() {
 <h3>Complete: {total_correct}</h3>
 
 <table class="digits">
+  {#if any_carries(carries)}
+    <tr>
+      <td></td>
+      {#each minuend as d, i}
+        <td>{#if carries[i]}{d - 1 + (i > 0 && carries[i - 1] ? 10 : 0)}{/if}</td>
+      {/each}
+    </tr>
+  {/if}
   <tr>
     <td></td>
-    {#each minuend as d}
-      <td>{d}</td>
+    {#each minuend as d, i}
+      <td>{#if carries[i]}<strike>{d}</strike>{:else}{d + (i > 0 && carries[i - 1] ? 10 : 0)}{/if}</td>
     {/each}
   </tr>
   <tr>
     <td>-</td>
-    {#each subtrahend as d}
+    {#each subtrahend as d, i}
       <td>{d}</td>
     {/each}
   </tr>
@@ -178,7 +221,8 @@ function reset_total() {
 <input on:keydown={handle_input}/>
 
 <p class="instructions">
-  Instructions: perform the subtraction. Your cursor must be in the input box to enter digits. If "Check digits" is enabled, each digit will be highlighted in green or red if it is correct or incorrect. If "Auto-complete" is turned off, press enter once you have finished; if your answer is correct, it will be replaced by a new problem.
+  Instructions: perform the subtraction. Your cursor must be in the input box to enter digits. If "Check digits" is enabled, each digit will be highlighted in green or red if it is correct or incorrect. If "Auto-complete" is turned off, press enter once you have finished; if your answer is correct, it will be replaced by a new problem.<br/><br/>
+  If you press 'c', it will apply a carry from the next digit to the current digit. Press 'c' again to undo the carry.
 </p>
 
 <div class="config">
