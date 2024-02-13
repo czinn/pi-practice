@@ -71,6 +71,27 @@ function reset_total() {
 
 <h1>Checksums</h1>
 
+<h3>Complete: {total_solved}</h3>
+
+<table class="digits">
+  <tr>
+    <td></td>
+    {#each number as d}
+      <td>{d}</td>
+    {/each}
+  </tr>
+</table>
+
+<input on:keydown={handle_input}/>
+
+{#if last_wrong !== null}
+  <h2 class="wrong">{last_wrong} is incorrect</h2>
+{/if}
+
+<p class="instructions">
+  Instructions: find the remainder after dividing by {modulus} and enter in the box. {#if modulus === 11}If the remainder is 10, enter 't'.{/if}
+</p>
+
 <div class="config">
   <table>
     <tr>
@@ -93,46 +114,18 @@ function reset_total() {
   </div>
 </div>
 
-<h3>Complete: {total_solved}</h3>
-
-<table class="digits">
-  <tr>
-    <td></td>
-    {#each number as d}
-      <td>{d}</td>
-    {/each}
-  </tr>
-</table>
-
-<input on:keydown={handle_input}/>
-
-<p class="instructions">
-  Instructions: find the remainder after dividing by {modulus} and enter in the box. {#if modulus === 11}If the remainder is 10, enter 't'.{/if}
-</p>
-
-{#if last_wrong !== null}
-  <h2 class="wrong">{last_wrong} is incorrect</h2>
-{/if}
-
 <style>
 .instructions {
-  width: 500px;
   margin: 20px auto;
 }
 .digits {
-  font-size: 48px;
+  font-size: 30px;
 }
 
 .digits td {
   border-radius: 10px;
-  width: 75px;
-  height: 75px;
-}
-
-.config {
-  position: absolute;
-  left: 10px;
-  top: 10px;
+  width: 60px;
+  height: 60px;
 }
 
 .wrong {

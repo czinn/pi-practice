@@ -148,27 +148,6 @@ function reset_total() {
 
 <h1>Subtraction</h1>
 
-<div class="config">
-  <table>
-    <tr>
-      <td><label for="length">Length</label></td>
-      <td><input id="length" bind:value={difficulty}/></td>
-    </tr>
-    <tr>
-      <td><label for="check-digits">Check digits</label></td>
-      <td><input id="check-digits" type="checkbox" bind:checked={check_digits}/></td>
-    </tr>
-    <tr>
-      <td><label for="auto-complete">Auto-complete</label></td>
-      <td><input id="check-digits" type="checkbox" bind:checked={auto_complete}/></td>
-    </tr>
-  </table>
-
-  <div>
-    <button on:click={reset_total}>Reset total</button>
-  </div>
-</div>
-
 <h3>Complete: {total_correct}</h3>
 
 <table class="digits">
@@ -202,9 +181,29 @@ function reset_total() {
   Instructions: perform the subtraction. Your cursor must be in the input box to enter digits. If "Check digits" is enabled, each digit will be highlighted in green or red if it is correct or incorrect. If "Auto-complete" is turned off, press enter once you have finished; if your answer is correct, it will be replaced by a new problem.
 </p>
 
+<div class="config">
+  <table>
+    <tr>
+      <td><label for="length">Length</label></td>
+      <td><input id="length" bind:value={difficulty}/></td>
+    </tr>
+    <tr>
+      <td><label for="check-digits">Check digits</label></td>
+      <td><input id="check-digits" type="checkbox" bind:checked={check_digits}/></td>
+    </tr>
+    <tr>
+      <td><label for="auto-complete">Auto-complete</label></td>
+      <td><input id="check-digits" type="checkbox" bind:checked={auto_complete}/></td>
+    </tr>
+  </table>
+
+  <div>
+    <button on:click={reset_total}>Reset total</button>
+  </div>
+</div>
+
 <style>
 .instructions {
-  width: 500px;
   margin: 20px auto;
 }
 .correct {
@@ -218,18 +217,12 @@ function reset_total() {
 }
 
 .digits {
-  font-size: 48px;
+  font-size: 30px;
 }
 
 .digits td {
   border-radius: 10px;
-  width: 75px;
-  height: 75px;
-}
-
-.config {
-  position: absolute;
-  left: 10px;
-  top: 10px;
+  width: 60px;
+  height: 60px;
 }
 </style>
