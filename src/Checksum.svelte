@@ -3,13 +3,7 @@ let difficulty = 20;
 
 let modulus = 9;
 
-let timed_challenge = false;
-let timed_target = 10;
-let start_time = null;
-let now = null;
-let now_interval = null;
 let total_solved = 0;
-let total_time = null;
 let last_wrong = null;
 
 let number = [];
@@ -48,26 +42,14 @@ function generate() {
 
 $: generate(difficulty);
 
-function maybe_stop_timer() {
-  if (total_solved >= timed_target) {
-    total_time = Date.now() - start_time;
-    timed_challenge = false;
-  }
-}
-
 function check_answer(answer) {
   let actual_answer = checksum(number, modulus);
-  if (answer === actual_answer) {
+  if (answer % modulus === actual_answer) {
     total_solved++;
-    maybe_stop_timer();
     generate();
   } else {
     last_wrong = answer;
   }
-}
-
-function update_now() {
-  now = Date.now();
 }
 
 function handle_input(e) {
@@ -80,16 +62,9 @@ function handle_input(e) {
   e.stopPropagation();
 }
 
-function start_timer() {
-  timed_challenge = true;
-  start_time = Date.now();
+function reset_total() {
   total_solved = 0;
-  total_time = null;
   generate();
-  now = Date.now();
-  if (now_interval === null) {
-    now_interval = setInterval(update_now, 100);
-  }
 }
 
 </script>
@@ -114,17 +89,9 @@ function start_timer() {
   </table>
 
   <div>
-    <label for="timed-target">Target number checked</label>
-    <input id="timed-target" type="number" bind:value={timed_target}/><br>
-    <button on:click={start_timer}>Start timed challenge</button>
+    <button on:click={reset_total}>Reset total</button>
   </div>
 </div>
-
-{#if timed_challenge}
-  <h3>Time: {#if start_time !== null}{Math.max(0, Math.ceil((now - start_time) / 1000))}{/if}s</h3>
-{:else if total_time !== null}
-  <h3>Completed {total_solved} in {Math.round(total_time / 1000)}s; {Math.round(total_time / 100 / total_solved) / 10}s per checksum</h3>
-{/if}
 
 <h3>Complete: {total_solved}</h3>
 
@@ -139,11 +106,19 @@ function start_timer() {
 
 <input on:keydown={handle_input}/>
 
+<p class="instructions">
+  Instructions: find the remainder after dividing by {modulus} and enter in the box. {#if modulus === 11}If the remainder is 10, enter 't'.{/if}
+</p>
+
 {#if last_wrong !== null}
-  <h2 class="wrong">{last_wrong}</h2>
+  <h2 class="wrong">{last_wrong} is incorrect</h2>
 {/if}
 
 <style>
+.instructions {
+  width: 500px;
+  margin: 20px auto;
+}
 .digits {
   font-size: 48px;
 }

@@ -5,11 +5,6 @@ let check_digits = true;
 let auto_complete = true;
 let timer_duration = 100;
 
-let timed_challenge = false;
-let end_time = null;
-let now = null;
-let now_interval = null;
-
 let minuend = [];
 let subtrahend = [];
 let actual_answer = [];
@@ -17,6 +12,15 @@ let answer = [];
 let answer_index = 0;
 
 let total_correct = 0;
+
+function handle_forward(forward) {
+  for (let i = 0; i < minuend.length; i++) {
+    answer[i] = null;
+  }
+  answer_index = forward ? 0 : answer.length - 1;
+}
+
+$: handle_forward(forward);
 
 function random_digit() {
   return Math.floor(Math.random() * 10);
@@ -92,26 +96,8 @@ function check_answer() {
   }
 }
 
-function update_now() {
-  now = Date.now();
-}
-
-function set_end_time() {
-  if (timed_challenge && end_time === null) {
-    now = Date.now();
-    end_time = Date.now() + timer_duration * 1000;
-    if (now_interval === null) {
-      now_interval = setInterval(update_now, 100);
-    }
-  }
-}
-
 function enter_digit(digit) {
   if (answer_index < 0 || answer_index >= answer.length) {
-    return;
-  }
-  set_end_time();
-  if (timed_challenge && end_time !== null && end_time <= Date.now()) {
     return;
   }
   answer[answer_index] = digit;
@@ -152,12 +138,11 @@ function handle_input(e) {
   e.stopPropagation();
 }
 
-function start_timer() {
-  timed_challenge = true;
-  end_time = null;
-  total_correct = 0;
+function reset_total() {
+  total_solved = 0;
   generate();
 }
+
 
 </script>
 
@@ -177,22 +162,12 @@ function start_timer() {
       <td><label for="auto-complete">Auto-complete</label></td>
       <td><input id="check-digits" type="checkbox" bind:checked={auto_complete}/></td>
     </tr>
-    <tr>
-      <td><label for="forward">Forward</label></td>
-      <td><input id="forward" type="checkbox" bind:checked={forward}/></td>
-    </tr>
   </table>
 
   <div>
-    <label for="timer-duration">Timer duration (s) </label>
-    <input id="timer-duration" type="number" bind:value={timer_duration}/><br>
-    <button on:click={start_timer}>Start timed challenge</button>
+    <button on:click={reset_total}>Reset total</button>
   </div>
 </div>
-
-{#if timed_challenge}
-  <h3>Time remaining: {#if end_time !== null}{Math.max(0, Math.ceil((end_time - now) / 1000))}{:else}{timer_duration}{/if}s</h3>
-{/if}
 
 <h3>Complete: {total_correct}</h3>
 
@@ -223,7 +198,15 @@ function start_timer() {
 
 <input on:keydown={handle_input}/>
 
+<p class="instructions">
+  Instructions: perform the subtraction. Your cursor must be in the input box to enter digits. If "Check digits" is enabled, each digit will be highlighted in green or red if it is correct or incorrect. If "Auto-complete" is turned off, press enter once you have finished; if your answer is correct, it will be replaced by a new problem.
+</p>
+
 <style>
+.instructions {
+  width: 500px;
+  margin: 20px auto;
+}
 .correct {
   color: green;
 }
