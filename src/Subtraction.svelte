@@ -205,6 +205,7 @@ function reset_total() {
 <style>
 .instructions {
   margin: 20px auto;
+  max-width: 500px;
 }
 .correct {
   color: green;
@@ -218,6 +219,7 @@ function reset_total() {
 
 .digits {
   font-size: 30px;
+  margin: 10px;
 }
 
 .digits td {

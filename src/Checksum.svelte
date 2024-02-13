@@ -117,6 +117,7 @@ function reset_total() {
 <style>
 .instructions {
   margin: 20px auto;
+  max-width: 500px;
 }
 .digits {
   font-size: 30px;
